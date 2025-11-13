@@ -28,7 +28,7 @@ PACKAGE_URL=https://github.com/pytorch/vision.git
 OS_NAME=$(cat /etc/os-release | grep ^PRETTY_NAME | cut -d= -f2)
 MAX_JOBS=${MAX_JOBS:-$(nproc)}
 VERSION=${PACKAGE_VERSION#v}
-PYTORCH_VERSION=${3:-v2.8.0}
+PYTORCH_VERSION=${3:-v2.9.0}
 CURRENT_DIR=/opt
 
 apt update -y && apt install -y curl git wget python3-dev python3-pip pkg-config gfortran ninja-build build-essential libblas-dev liblapack-dev patchelf  libopenblas-dev autoconf  autoconf automake libtool libgmp-dev libssl-dev libjpeg-dev libfreetype6-dev protobuf-compiler libprotobuf-dev libmp3lame-dev libjpeg62
