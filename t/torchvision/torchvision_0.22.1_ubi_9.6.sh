@@ -30,7 +30,13 @@ VERSION=${PACKAGE_VERSION#v}
 PYTHON_VERSION=${2:-3.12}
 PYTORCH_VERSION=${3:-v2.9.0}
 
-CURRENT_DIR=/opt
+CURRENT_DIR=$(pwd)
+
+if [[ -n "$VIRTUAL_ENV" ]]; then
+    export PYTHON_SITE_PACKAGES=$(python3 -c "import site; print(site.getsitepackages()[2])")
+else
+    export PYTHON_SITE_PACKAGES=$(python3 -c "import site; print(site.getsitepackages()[0])")
+fi
 
 yum install -y git make wget python$PYTHON_VERSION python$PYTHON_VERSION-devel python$PYTHON_VERSION-pip pkgconfig atlas libjpeg-devel openblas-devel
 yum install gcc-toolset-13 -y
@@ -260,7 +266,6 @@ python3 -m pip install -r requirements.txt
 echo "----------Installing pytorch------------"
 MAX_JOBS=$(nproc) python3 setup.py install
 MAX_JOBS=$(nproc) python3 setup.py bdist_wheel
-cp dist/*.whl $CURRENT_DIR
 cd $CURRENT_DIR
 
 echo "--------------------------------- Installing Opus ---------------------------------"
@@ -574,6 +579,7 @@ export CMAKE_PREFIX_PATH=$CURRENT_DIR/pytorch/torch/share/cmake/Torch:$LIBPROTO_
 cmake ..
 make install
 cp libtorchvision.so $CURRENT_DIR/vision/torchvision/libtorchvision.so
+cp libtorchvision.so $PYTHON_SITE_PACKAGES/torch/share/cmake/Torch
 cp libtorchvision.so /usr/local/lib64
 cd $CURRENT_DIR/vision
 python3 setup.py bdist_wheel --dist-dir $CURRENT_DIR
