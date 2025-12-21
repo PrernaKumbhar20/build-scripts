@@ -38,15 +38,18 @@ yum install -y make libtool  xz zlib-devel openssl-devel bzip2-devel libffi-deve
 
 ln -sf /usr/bin/pip$PYTHON_VERSION /usr/bin/pip3 && ln -sf /usr/bin/python$PYTHON_VERSION /usr/bin/python3 && ln -sf /usr/bin/pip$PYTHON_VERSION /usr/bin/pip && ln -sf /usr/bin/python$PYTHON_VERSION /usr/bin/python
 
-export PYTHON_SITE_PACKAGES=$(python3 - <<'EOF'
-import site, os
-paths = site.getsitepackages()
-for p in paths:
-    if "lib64" in p:
-        print(p)
-        break
+export PYTHON_SITE_PACKAGES=$(python - <<'EOF'
+import sysconfig, os
+
+venv = os.environ.get("VIRTUAL_ENV")
+paths = sysconfig.get_paths()
+
+if venv:
+    # Prefer venv path
+    print(paths["platlib"])
 else:
-    print(paths[0])
+    # System python
+    print(paths["platlib"])
 EOF
 )
 dnf install -y gcc-toolset-13-libatomic-devel
